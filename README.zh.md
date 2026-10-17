@@ -40,9 +40,13 @@ npm run init:content
 ADMIN_KEY="你的长随机口令" npm run dev
 ```
 
+（Windows PowerShell 写法：`$env:ADMIN_KEY="你的长随机口令"; npm run dev`。）
+
 打开 <http://localhost:3000>。后台在 `/admin`（故意外不公开链接，知道
 地址即可进入）。Linux 服务器上的生产部署——pm2/systemd、nginx、HTTPS、
-备份——请看 **[docs/DEPLOY.md](docs/DEPLOY.md)**。
+备份——请看 **[docs/DEPLOY.md](docs/DEPLOY.md)**。后台登录没有内置限流，
+请在反向代理上对 `/api/admin/login` 限速（nginx `limit_req` 配置见
+docs/DEPLOY.md 第 6 节）。
 
 ## 配置：环境变量
 
@@ -98,7 +102,10 @@ pinned: true # 可选，默认 false——最新的置顶瞬间会展示在
 会被跳过并打服务端日志；首张图（字母序第一）作为封面与卡片图；列表缓存
 15 秒，新拷入的文件夹最多 15 秒后自动出现，无需重启。
 `npm run init:content` 做的就是把 [content-example/](content-example)
-原样拷进 `CONTENT_DIR`——这些示例也是现成的模板。
+原样拷进 `CONTENT_DIR`——这些示例也是现成的模板。图片带 **一年期
+immutable 缓存**（`Cache-Control: public, max-age=31536000, immutable`）：
+要换图请使用**新文件名**——就地覆盖同名文件的字节，浏览器/CDN 可能最长
+一年仍在展示旧图。
 
 ## 个性化
 

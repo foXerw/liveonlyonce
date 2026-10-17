@@ -11,7 +11,8 @@ import type { Locale } from "@/lib/types";
  * purpose: a 401 here means "wrong passcode" and must show a message, not
  * trigger the session-expiry redirect that lib/admin/client's adminFetch
  * performs on every other admin call. No captcha or rate-limit UI — the
- * README points deployments at reverse-proxy limiting instead.
+ * reverse proxy is expected to limit this endpoint; see docs/DEPLOY.md §6
+ * (nginx `limit_req` snippet for /api/admin/login).
  */
 export function PasscodeForm({ locale }: { locale: Locale }) {
   const router = useRouter();

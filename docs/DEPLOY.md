@@ -22,9 +22,9 @@ pm2 start ecosystem.config.cjs
   distro node is often too old; use NodeSource:
 
   ```bash
-  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
   sudo apt-get install -y nodejs git
-  node --version   # v20.x
+  node --version   # v22.x
   ```
 
   (nvm works too — just make sure the process manager resolves *your* node,
@@ -145,6 +145,18 @@ Env edits in the file only land after a restart that re-reads them:
 pm2 restart liveonlyonce --update-env
 ```
 
+**Memory headroom for uploads (ruling R15).** With admin middleware in the
+picture, Next buffers request bodies in memory up to
+`experimental.proxyClientMaxBodySize` in `next.config.ts` (currently 200 MB)
+before the route handler sees them — so one big album briefly occupies that
+much RAM. The `max_memory_restart: 512M` in `ecosystem.config.cjs` covers a
+single large upload with headroom; several *concurrent* very large uploads
+can cross it and pm2 will restart the app. That self-heal is acceptable for
+a single-admin deploy: the restart is fast, and a half-finished create never
+shows — `moment.yaml` is written last, so an interrupted folder fails
+validation and the loader skips it; just retry the upload. If it ever bites,
+lower `proxyClientMaxBodySize` toward your real album sizes.
+
 ## 5b. Run it with systemd instead
 
 Unit file — `/etc/systemd/system/liveonlyonce.service`:
@@ -179,6 +191,18 @@ self-hosted story is the supported one.)
 
 ## 6. nginx reverse proxy
 
+Put the login rate-limit zone in the `http` context (e.g. a file under
+`/etc/nginx/conf.d/`):
+
+```nginx
+# /etc/nginx/conf.d/liveonlyonce-limits.conf
+# The admin passcode is the only gate on /api/admin/login and the app has
+# no rate limiting of its own, so the proxy must make online brute-forcing
+# expensive: 10 attempts/minute per client IP, with a small allowance for
+# honest typos (burst=5, nodelay).
+limit_req_zone $binary_remote_addr zone=admin:10m rate=10r/m;
+```
+
 `/etc/nginx/sites-available/liveonlyonce`:
 
 ```nginx
@@ -186,13 +210,25 @@ server {
     listen 80;
     server_name liveonlyonce.example.com;
 
-    # Cap admin uploads here. The application itself would accept up to
-    # 60 images x 25 MB (~1.5 GB) in one request; letting nginx forward
-    # that is pointless. 200m covers a realistic burst (8 x 25 MB photos)
-    # while rejecting abusive bodies early with a cheap 413 instead of
-    # making Node buffer them. Lower it further if your uploads are
-    # phone-sized; raise it only if you actually post mega-albums.
+    # Cap admin uploads here. The app's own transport ceiling is
+    # next.config.ts experimental.proxyClientMaxBodySize (200 MB — what
+    # middleware/proxy buffers before the route handler parses the form);
+    # beyond the per-file 25 MB and 60-image caps enforced in
+    # lib/admin/store.ts, that is the largest body that can do damage.
+    # 200m matches it 1:1 so nginx rejects abusive bodies early with a
+    # cheap 413 instead of making Node buffer them. Lower it further if
+    # your uploads are phone-sized; if you raise it, raise the Next.js
+    # cap in next.config.ts with it.
     client_max_body_size 200m;
+
+    location /api/admin/login {
+        limit_req zone=admin burst=5 nodelay;
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -261,7 +297,10 @@ gitignored).
 | `/admin` login always fails, or `POST /api/admin/login` returns `500 {"error":"ADMIN_KEY not configured"}` | `ADMIN_KEY` never reached the process. Check `pm2 env <id>` / `systemctl show liveonlyonce -p Environment`; fix the env source and restart (`--update-env` for pm2). |
 | Sharing a link shows no (or a `localhost`) preview image            | `SITE_URL` unset or malformed — look for `[seo] SITE_URL "…" is not an absolute URL; ignoring it` in logs. It must be a full origin including scheme. |
 | Edited a content folder but the homepage is unchanged                | Listings cache for 15s; wait or restart. If it never appears, the folder name must match `YYYY-MM-DD-slug` (lowercase, digits) — look for `[content] skipped folder …` warnings in `pm2 logs` / `journalctl`. |
-| Admin upload fails with HTTP 413                                    | nginx refused the body before the app saw it — raise `client_max_body_size` toward your needs (Section 6). HTTP 400 instead means the app's own limits (≤60 images, ≤25 MB each, jpg/jpeg/png/webp). |
+| Admin upload fails with HTTP 413                                    | nginx refused the body before the app saw it — raise `client_max_body_size` toward your needs (Section 6). HTTP 400 instead means the app's own limits (≤60 images, ≤25 MB each, jpg/jpeg/png/webp; bodies over the 200 MB transport cap in `next.config.ts` fail as a corrupt form — also 400). |
+| Replaced an image's bytes **under the same filename**; browsers/CDN still show the old picture | `/api/asset/*` responses are `Cache-Control: public, max-age=31536000, immutable` — a cached URL is not revalidated for up to a year. Always publish replacements under a **new filename** (the cache key includes it); old names are then simply gone from the moment. Same rule for hand-edits in Track 2 (see README). |
+| Site shows the built-in placeholder hero/about/footer copy          | `site.config.yaml` is missing from the app's working directory, unparseable, or not a mapping. Look for `[config] site config "…" …using built-in placeholder copy` in `pm2 logs` / `journalctl` (logged once per start); fix the file and restart. |
+| Homepage feels sluggish in bursts with a very large library (hundreds of moments) | The 15s listing cache re-scans the whole `CONTENT_DIR` (plus sharp-reads posters) when it expires and after every admin write — whoever lands first after expiry pays it. Correct, just not instant; a background/refresh-ahead rescan is tracked as a fast-follow optimization. |
 | Dev: changing `messages/*.json` does nothing                        | Turbopack caches imported JSON — restart the dev server. |
 | Planning a Next 17 upgrade                                          | Rename `middleware.ts` → `proxy.ts` (same exports); Next 16 logs this deprecation on startup. |
 | Port 3000 already in use                                            | Change `PORT` in the env source and restart. |

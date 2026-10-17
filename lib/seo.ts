@@ -3,8 +3,9 @@ import { siteConfig } from "@/lib/config/site";
 import { assetUrl } from "@/lib/media/url";
 
 /**
- * The width tier used for social-preview images: the largest served tier,
- * still a comfortable og:image, and the one share crawlers downscale best.
+ * The width tier used for social-preview images: the middle tier of the
+ * served {640, 1280, 1920} set (see lib/media/url.ts) — a comfortable
+ * og:image width, and the one share crawlers downscale best.
  */
 const OG_IMAGE_WIDTH = 1280;
 

@@ -42,10 +42,14 @@ npm run init:content
 ADMIN_KEY="your-long-random-passcode" npm run dev
 ```
 
+(Windows PowerShell: `$env:ADMIN_KEY="your-long-random-passcode"; npm run dev`.)
+
 Open <http://localhost:3000>. The admin UI is at `/admin` (it is deliberately
 not linked anywhere; know the URL). For a production deployment on a Linux
 server — pm2/systemd, nginx, HTTPS, backups — follow
-**[docs/DEPLOY.md](docs/DEPLOY.md)**.
+**[docs/DEPLOY.md](docs/DEPLOY.md)**. The admin login has no built-in rate
+limiting; rate-limit `/api/admin/login` at your reverse proxy (the nginx
+`limit_req` snippet is in docs/DEPLOY.md §6).
 
 ## Configuration: environment variables
 
@@ -105,7 +109,10 @@ with a server log warning (`[content] skipped folder …`); listings are
 cached for 15 seconds, so a freshly copied folder shows up within 15s
 without a restart. `npm run init:content` just bootstraps the
 [content-example/](content-example) folders into `CONTENT_DIR` — study them
-as living templates.
+as living templates. Images are served with a **1-year immutable cache**
+(`Cache-Control: public, max-age=31536000, immutable`): to replace a photo,
+give it a **new filename** — overwriting the bytes under the old name can
+keep showing the stale image in browsers/CDNs for up to a year.
 
 ## Customization
 
