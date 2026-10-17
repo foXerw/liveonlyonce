@@ -28,19 +28,44 @@ const PLACEHOLDER: SiteConfig = {
 };
 
 export function loadSiteConfig(path: string = DEFAULT_PATH): SiteConfig {
-  let doc: unknown;
+  let text: string;
   try {
     // Intentionally a runtime read of the repo-root config file on the host
     // (self-hosted deployment via `next start`); opting out of bundler
     // file-tracing keeps Turbopack from pulling the whole project into output.
-    doc = parseYaml(readFileSync(/* turbopackIgnore: true */ path, "utf-8"));
+    text = readFileSync(/* turbopackIgnore: true */ path, "utf-8");
   } catch {
+    warnPlaceholderFallback(path, "could not be read (missing file?)");
+    return fromFields(null);
+  }
+  let doc: unknown;
+  try {
+    doc = parseYaml(text);
+  } catch {
+    warnPlaceholderFallback(path, "is not valid YAML");
     return fromFields(null);
   }
   if (!isRecord(doc)) {
+    warnPlaceholderFallback(path, "is not a mapping");
     return fromFields(null);
   }
   return fromFields(doc);
+}
+
+// Total fallback (missing/unparseable/non-mapping file) is silent by design
+// in that the site keeps working on placeholders — but it must not be silent
+// in the logs, or a typo'd site.config.yaml reads as "my hero copy is gone".
+// Warn once per process; per-field placeholder merges are normal behavior
+// and stay quiet.
+let placeholderWarned = false;
+
+function warnPlaceholderFallback(path: string, reason: string): void {
+  if (placeholderWarned) return;
+  placeholderWarned = true;
+  console.warn(
+    `[config] site config "${path}" ${reason}; using built-in placeholder copy ` +
+      `(logged once — fix the file and restart to take effect)`,
+  );
 }
 
 // Module-level singleton (server only — reads the filesystem at import).

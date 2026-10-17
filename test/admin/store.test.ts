@@ -231,6 +231,32 @@ describe("updateMoment", () => {
     ).rejects.toThrow(StoreValidationError);
   });
 
+  it("tolerates duplicate names in remove — unlinks once, update fully applies", async () => {
+    const dir = await tempContentDir();
+    const created = await createMoment(dir, input(), [upload("one.png"), upload("two.png")]);
+
+    // Regression: a repeated name used to be unlinked twice — the second
+    // unlink threw ENOENT (500) AFTER the first file was already gone and
+    // before moment.yaml was rewritten: a half-applied update.
+    await expect(
+      updateMoment(
+        dir,
+        created.id,
+        { ...input(), title: { zh: "改过", en: "Edited" } },
+        { remove: ["01-one.png", "01-one.png"] },
+      ),
+    ).resolves.toBeUndefined();
+
+    clearContentCache();
+    const [read] = await loadMoments(dir);
+    expect(read.title).toEqual({ zh: "改过", en: "Edited" });
+    expect(read.images.map((i) => i.file)).toEqual(["02-two.png"]); // other file intact
+    expect((await readdir(path.join(dir, created.id))).sort()).toEqual([
+      "02-two.png",
+      "moment.yaml",
+    ]);
+  });
+
   it("rejects replace+oversize BEFORE deleting existing images (no data loss)", async () => {
     const dir = await tempContentDir();
     const created = await createMoment(dir, input(), [upload("one.png"), upload("two.png")]);

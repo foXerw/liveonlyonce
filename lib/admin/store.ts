@@ -186,10 +186,12 @@ export async function updateMoment(
   const all = await readdir(folderPath);
   const existing = all.filter((name) => isImageName(name) && !name.includes("..") && name !== "moment.yaml");
 
-  const toRemove: string[] = [];
-  for (const raw of files.remove ?? []) {
-    toRemove.push(requireRemovableImage(raw, existing));
-  }
+  // Dedupe BEFORE validation and before the kept/doomed arithmetic: a
+  // repeated name in `remove` would otherwise unlink once, then hit ENOENT
+  // on the second unlink — a 500 with the first file already gone.
+  const toRemove = [...new Set(files.remove ?? [])].map((raw) =>
+    requireRemovableImage(raw, existing),
+  );
 
   // Projected final image set — MAX_IMAGES arithmetic happens BEFORE any unlink.
   const kept = files.replace ? [] : existing.filter((name) => !toRemove.includes(name));

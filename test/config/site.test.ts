@@ -1,7 +1,7 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { loadSiteConfig, siteConfig } from "@/lib/config/site";
 
 let dir: string;
@@ -10,6 +10,16 @@ beforeAll(() => {
 });
 afterAll(() => {
   rmSync(dir, { recursive: true, force: true });
+});
+
+// The total-fallback path now logs one console.warn; keep vitest output
+// pristine for the behavior tests and let the warn describe below inspect
+// the same spy's call history.
+beforeEach(() => {
+  vi.spyOn(console, "warn").mockImplementation(() => {});
+});
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe("loadSiteConfig", () => {
@@ -66,5 +76,56 @@ footer: "not a mapping"
     expect(config.heroLine.en).toBeTruthy(); // per-locale placeholder fallback
     expect(config.footer.zh).toBeTruthy();
     expect(config.footer.en).toBeTruthy(); // non-mapping field falls back whole
+  });
+});
+
+describe("total-fallback console.warn", () => {
+  // vi.resetModules gives each test a freshly loaded module with its own
+  // one-time warn flag. The healthiest case (import-time load of the
+  // committed site.config.yaml) succeeds, so importing never warns.
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it("warns once per process, naming the file and reason, when the file is missing", async () => {
+    const warn = vi.spyOn(console, "warn");
+    const { loadSiteConfig: fresh } = await import("@/lib/config/site");
+    fresh(path.join(dir, "absent.yaml"));
+    fresh(path.join(dir, "absent-again.yaml")); // same process: still one warning
+    expect(warn).toHaveBeenCalledTimes(1);
+    const message = String(warn.mock.calls[0][0]);
+    expect(message).toContain("absent.yaml");
+    expect(message).toMatch(/could not be read/i);
+    expect(message).toMatch(/placeholder/i);
+  });
+
+  it("warns when the yaml does not parse", async () => {
+    const warn = vi.spyOn(console, "warn");
+    const { loadSiteConfig: fresh } = await import("@/lib/config/site");
+    const broken = path.join(dir, "broken-warn.yaml");
+    writeFileSync(broken, "siteName: {unterminated", "utf-8");
+    fresh(broken);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0][0])).toMatch(/not valid YAML/i);
+  });
+
+  it("warns when the yaml parses but is not a mapping", async () => {
+    const warn = vi.spyOn(console, "warn");
+    const { loadSiteConfig: fresh } = await import("@/lib/config/site");
+    const list = path.join(dir, "list-warn.yaml");
+    writeFileSync(list, "- just\n- a\n- list", "utf-8");
+    fresh(list);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0][0])).toMatch(/not a mapping/i);
+  });
+
+  it("stays quiet for a healthy file and for per-field placeholder merges", async () => {
+    const warn = vi.spyOn(console, "warn");
+    const { loadSiteConfig: fresh } = await import("@/lib/config/site");
+    fresh(); // committed site.config.yaml at the project root
+    const partial = path.join(dir, "partial-warn.yaml");
+    writeFileSync(partial, "siteName: Only Name\n", "utf-8");
+    fresh(partial); // per-field merge is normal behavior, not a total fallback
+    expect(warn).not.toHaveBeenCalled();
   });
 });
