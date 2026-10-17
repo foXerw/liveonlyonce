@@ -1,6 +1,8 @@
 import { createElement } from "react";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import enMessages from "@/messages/en.json";
+import zhMessages from "@/messages/zh.json";
 import { LocaleToggle } from "@/lib/i18n/client";
 import { getLocale, LOCALE_COOKIE, t } from "@/lib/i18n/server";
 
@@ -90,6 +92,8 @@ describe("t", () => {
     "admin.loginFailed",
     "about.title",
     "footer.builtWith",
+    "notFound.title",
+    "notFound.hint",
   ];
 
   it.each(UI_KEYS)("resolves every planned chrome key in both locales", (key) => {
@@ -97,6 +101,30 @@ describe("t", () => {
     expect(t(key, "zh").length).toBeGreaterThan(0);
     expect(t(key, "en")).not.toBe(key);
     expect(t(key, "en").length).toBeGreaterThan(0);
+  });
+});
+
+describe("catalog parity", () => {
+  // Hard gate: because t() silently falls back to the literal key when a
+  // catalog misses one, drift between the two message files renders raw
+  // keys with no failing test. Every key must exist in both catalogs.
+  it("every zh.json key also exists in en.json", () => {
+    const missing = Object.keys(zhMessages).filter((key) => !(key in enMessages));
+    expect(missing).toEqual([]);
+  });
+
+  it("every en.json key also exists in zh.json", () => {
+    const missing = Object.keys(enMessages).filter((key) => !(key in zhMessages));
+    expect(missing).toEqual([]);
+  });
+
+  it("every catalog value is a non-empty string", () => {
+    for (const [name, catalog] of [["zh", zhMessages], ["en", enMessages]] as const) {
+      for (const [key, value] of Object.entries(catalog)) {
+        expect(typeof value, `${name}.json["${key}"]`).toBe("string");
+        expect((value as string).trim().length, `${name}.json["${key}"]`).toBeGreaterThan(0);
+      }
+    }
   });
 });
 
