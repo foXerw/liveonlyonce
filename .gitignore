@@ -1,7 +1,8 @@
 node_modules/
 .next/
 .cache/
-content/
+/content/
 .superpowers/
 *.local
 .env*
+*.tsbuildinfo
