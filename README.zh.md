@@ -74,25 +74,25 @@ docs/DEPLOY.md 第 6 节）。
 
 ```
 content/
-└── 2026-04-06-city-harvest/
-    ├── 01-rooftop.png      # 文件名按字母序即展示顺序
-    ├── 02-market.jpg       # jpg / jpeg / png / webp 会被收集
+└── 2026-08-02-coastal-highway/
+    ├── 01-headland.png     # 文件名按字母序即展示顺序
+    ├── 02-boardwalk.jpg    # jpg / jpeg / png / webp 会被收集
     └── moment.yaml         # 全部元数据在这里
 ```
 
 `moment.yaml` 完整示例：
 
 ```yaml
-date: 2026-04-06 # YYYY-MM-DD，决定时间线顺序
+date: 2026-08-02 # YYYY-MM-DD，决定时间线顺序
 title:
-  zh: 城市收获日
-  en: City Harvest Day
+  zh: 沿海公路的夏天
+  en: A Summer on the Coastal Highway
 description:
-  zh: 一张照片也能讲一个下午。
-  en: A single photo can carry a whole afternoon.
+  zh: 车窗只开了一半，海风比音乐先醒过来。
+  en: The window was open halfway, and the sea breeze got to us before the music did.
 location: # 可选
-  zh: 家附近
-  en: Close to home
+  zh: 南方海岸线
+  en: The southern coast
 pinned: true # 可选，默认 false——最新的置顶瞬间会展示在
              # 时间线上方的精选位（时间线内仍保留）
 ```

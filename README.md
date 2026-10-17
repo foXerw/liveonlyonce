@@ -79,25 +79,25 @@ A moment is one directory inside `CONTENT_DIR`:
 
 ```
 content/
-└── 2026-04-06-city-harvest/
-    ├── 01-rooftop.png      # filenames sort alphabetically → display order
-    ├── 02-market.jpg       # jpg / jpeg / png / webp are picked up
+└── 2026-08-02-coastal-highway/
+    ├── 01-headland.png     # filenames sort alphabetically → display order
+    ├── 02-boardwalk.jpg    # jpg / jpeg / png / webp are picked up
     └── moment.yaml         # all metadata lives here
 ```
 
 Complete `moment.yaml` example:
 
 ```yaml
-date: 2026-04-06 # YYYY-MM-DD; drives timeline order
+date: 2026-08-02 # YYYY-MM-DD; drives timeline order
 title:
-  zh: 城市收获日
-  en: City Harvest Day
+  zh: 沿海公路的夏天
+  en: A Summer on the Coastal Highway
 description:
-  zh: 一张照片也能讲一个下午。
-  en: A single photo can carry a whole afternoon.
+  zh: 车窗只开了一半，海风比音乐先醒过来。
+  en: The window was open halfway, and the sea breeze got to us before the music did.
 location: # optional
-  zh: 家附近
-  en: Close to home
+  zh: 南方海岸线
+  en: The southern coast
 pinned: true # optional, default false — the newest pinned moment is
              # featured above the timeline (and stays in it)
 ```

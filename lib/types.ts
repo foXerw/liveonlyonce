@@ -10,7 +10,7 @@ export interface MomentImage {
 }
 
 export interface Moment {
-  id: string; // folder name, e.g. 2025-08-15-qinghai-grand-loop
+  id: string; // folder name, e.g. 2026-08-02-coastal-highway
   date: string; // ISO 'YYYY-MM-DD'
   pinned: boolean;
   title: LocalizedText;

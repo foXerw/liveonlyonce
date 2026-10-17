@@ -114,39 +114,44 @@ title:
 
 const EXAMPLES = [
   {
-    dir: "2025-08-15-qinghai-grand-loop",
-    yaml: `date: 2025-08-15
+    // Featured showcase: the only pinned moment (FeaturedCard + 置顶 badge).
+    // Album of five; the first image (alphabetical) is wide 16:9, which the
+    // loader routes to the horizontal AlbumCard.
+    dir: "2026-08-02-coastal-highway",
+    yaml: `date: 2026-08-02
 pinned: true
 title:
-  zh: 青甘大环线
-  en: Qinghai Grand Loop
+  zh: 沿海公路的夏天
+  en: A Summer on the Coastal Highway
 description:
-  zh: 七天两千公里的环线，占位文案，替换成你自己的故事。
-  en: Seven days and two thousand kilometres. Placeholder copy — replace it with your own story.
+  zh: 车窗只开了一半，海风比音乐先醒过来。有几段路一边是山一边是海，开久了就忘了时间。回程换了条路，顺路看了今年第一场日落。
+  en: The window was open halfway, and the sea breeze got to us before the music did. On the stretches with a mountain on one side and the ocean on the other, you stop checking the time. We took a different road home and caught the year's first sunset on the way.
 location:
-  zh: 青海·甘肃
-  en: Qinghai & Gansu, China
+  zh: 南方海岸线
+  en: The southern coast
 `,
     images: [
-      { file: "01-salt-lake.png", width: 1600, height: 900, from: BLUE, to: SAND },
-      { file: "02-desert-road.png", width: 1200, height: 1200, from: AMBER, to: PLUM },
-      { file: "03-prayer-flags.png", width: 800, height: 1600, from: TEAL, to: SLATE },
+      { file: "01-headland.png", width: 1600, height: 900, from: TEAL, to: SAND },
+      { file: "02-morning-fog.png", width: 1200, height: 800, from: SLATE, to: SAND },
+      { file: "03-long-bridge.png", width: 1440, height: 900, from: BLUE, to: TEAL },
+      { file: "04-beach-stop.png", width: 1200, height: 1200, from: SAND, to: AMBER },
+      { file: "05-homeward-dusk.png", width: 1600, height: 900, from: PLUM, to: ROSE },
     ],
   },
   {
     // Movie night: a tall poster first (poster = images[0]) plus one still,
     // so the loader classifies it album+tall — the PosterCard showcase.
-    dir: "2025-05-24-night-screen",
-    yaml: `date: 2025-05-24
+    dir: "2026-05-16-midnight-screening",
+    yaml: `date: 2026-05-16
 title:
-  zh: 夜场电影
-  en: Night Screening
+  zh: 午夜场
+  en: The Midnight Screening
 description:
-  zh: 老片重映，散场走进夜里，觉得街道也温柔了几分。占位短评。
-  en: A revival of an old film; walking out into the night, even the streets felt gentler. Placeholder review.
+  zh: 一个人看的最后一场，片子不算最好，散场后的夜路却刚好把情绪慢慢放平。下次还选这个场次。
+  en: The last show of the night, taken alone. Not the best film in the programme, but the quiet walk home evened everything out. Next time, same slot.
 location:
-  zh: 老城影院
-  en: The old-town cinema
+  zh: 市区的老影院
+  en: The old cinema downtown
 `,
     images: [
       { file: "01-poster.png", width: 800, height: 1200, from: PLUM, to: BLUE },
@@ -154,31 +159,53 @@ location:
     ],
   },
   {
-    dir: "2026-04-06-city-harvest",
-    yaml: `date: 2026-04-06
+    // Single-object milestone: one near-square photo -> PhotoCard (lightbox).
+    dir: "2026-09-07-first-badminton-racket",
+    yaml: `date: 2026-09-07
 title:
-  zh: 城市收获日
-  en: City Harvest Day
+  zh: 第一把球拍
+  en: My First Badminton Racket
 description:
-  zh: 一张照片也能讲一个下午。占位文案。
-  en: A single photo can carry a whole afternoon. Placeholder copy.
-location:
-  zh: 家附近
-  en: Close to home
+  zh: 看了两周的评测，最后带回家的却是最初没相中的那把。球场有风，先从发球练起。
+  en: Two weeks of reviews, and the one that came home was not the one I first had my eye on. There's a draught in the hall; serve practice first.
 `,
-    images: [{ file: "01-rooftop.png", width: 1920, height: 1080, from: SLATE, to: ROSE }],
+    images: [{ file: "01-racket.png", width: 1080, height: 1080, from: AMBER, to: SLATE }],
   },
   {
-    dir: "2026-09-12-quiet-lines",
-    yaml: `date: 2026-09-12
+    // Text-only moment: no images -> QuoteCard, the essay/quote path.
+    dir: "2026-03-11-note-to-myself",
+    yaml: `date: 2026-03-11
 title:
-  zh: 安静的句子
-  en: Quiet Lines
+  zh: 给自己的备忘
+  en: Note to Myself
 description:
-  zh: 纯文本瞬间：没有照片，只有一段话。占位文案。
-  en: A text-only moment — no photos, just a paragraph. Placeholder copy.
+  zh: |-
+    别再把"以后"当成一个保证。
+    想见的人这周就约，想学的东西从笨拙的第一小时开始。
+    日子是过出来的，不是攒出来的。
+  en: |-
+    Stop treating "someday" as a guarantee.
+    Invite that person this week; begin the new thing with its first, clumsy hour.
+    Days are spent, not saved up.
 `,
     images: [],
+  },
+  {
+    // Year-end note with a single cool-toned photo; gives the timeline its
+    // second year marker so the 2025 grouping is visible next to 2026.
+    dir: "2025-12-31-year-in-review",
+    yaml: `date: 2025-12-31
+title:
+  zh: 年终小结
+  en: Year in Review
+description:
+  zh: 今年学到的一件事，是把要紧的事排进日程，而不是等它自己有空。照片不多，话也不急着说。明年继续。
+  en: The one thing learned this year — schedule what matters instead of waiting for it to fit itself in. Few photos, nothing said in a hurry. To be continued next year.
+location:
+  zh: 书桌前
+  en: At the desk
+`,
+    images: [{ file: "01-last-evening.png", width: 1440, height: 1080, from: BLUE, to: SLATE }],
   },
 ];
 
