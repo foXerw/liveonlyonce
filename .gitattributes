@@ -1,0 +1,6 @@
+# Normalize line endings for the repo: store LF, check out LF everywhere.
+# The deployment target is Linux, and this repo was built on Windows — without
+# this rule editors on different platforms keep flip-flopping line endings and
+# produce whole-file diffs. Binary formats (the example PNGs, fonts, …) are
+# left untouched by the `auto` text detection.
+* text=auto eol=lf
