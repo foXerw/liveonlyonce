@@ -17,12 +17,14 @@ function cx(...parts: Array<string | false | undefined>): string {
 export function Timeline({
   groups,
   locale,
+  priorityId,
 }: {
   groups: YearGroup[];
   locale: Locale;
+  /** Moment whose image loads eagerly (hero-adjacent); omit for none. */
+  priorityId?: string;
 }) {
   const total = groups.reduce((sum, group) => sum + group.moments.length, 0);
-  const firstId = groups[0]?.moments[0]?.id;
   let running = 0;
 
   return (
@@ -71,7 +73,7 @@ export function Timeline({
                     <MomentCard
                       moment={moment}
                       locale={locale}
-                      priority={moment.id === firstId}
+                      priority={moment.id === priorityId}
                     />
                   </Reveal>
                 </li>

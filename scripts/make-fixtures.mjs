@@ -134,6 +134,26 @@ location:
     ],
   },
   {
+    // Movie night: a tall poster first (poster = images[0]) plus one still,
+    // so the loader classifies it album+tall — the PosterCard showcase.
+    dir: "2025-05-24-night-screen",
+    yaml: `date: 2025-05-24
+title:
+  zh: 夜场电影
+  en: Night Screening
+description:
+  zh: 老片重映，散场走进夜里，觉得街道也温柔了几分。占位短评。
+  en: A revival of an old film; walking out into the night, even the streets felt gentler. Placeholder review.
+location:
+  zh: 老城影院
+  en: The old-town cinema
+`,
+    images: [
+      { file: "01-poster.png", width: 800, height: 1200, from: PLUM, to: BLUE },
+      { file: "02-still.png", width: 1200, height: 800, from: SLATE, to: TEAL },
+    ],
+  },
+  {
     dir: "2026-04-06-city-harvest",
     yaml: `date: 2026-04-06
 title:
