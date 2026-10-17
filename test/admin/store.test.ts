@@ -231,6 +231,41 @@ describe("updateMoment", () => {
     ).rejects.toThrow(StoreValidationError);
   });
 
+  it("rejects replace+oversize BEFORE deleting existing images (no data loss)", async () => {
+    const dir = await tempContentDir();
+    const created = await createMoment(dir, input(), [upload("one.png"), upload("two.png")]);
+    await expect(
+      updateMoment(dir, created.id, input(), {
+        replace: true,
+        add: Array.from({ length: MAX_IMAGES + 1 }, (_, i) => upload(`x${i}.png`)),
+      }),
+    ).rejects.toThrow(StoreValidationError);
+    clearContentCache();
+    const [read] = await loadMoments(dir);
+    expect(read.images.map((i) => i.file)).toEqual(["01-one.png", "02-two.png"]);
+  });
+
+  it("a failed add or mid-list removal leaves the folder completely untouched", async () => {
+    const dir = await tempContentDir();
+    const created = await createMoment(dir, input(), [upload("one.png"), upload("two.png")]);
+    // last file invalid: none may be deleted nor written
+    await expect(
+      updateMoment(dir, created.id, input(), {
+        remove: ["01-one.png"],
+        add: [upload("ok.png"), upload("bad.exe")],
+      }),
+    ).rejects.toThrow(StoreValidationError);
+    // second removal missing: the first must not have been unlinked
+    await expect(
+      updateMoment(dir, created.id, input(), { remove: ["01-one.png", "missing.png"] }),
+    ).rejects.toThrow(StoreValidationError);
+    expect((await readdir(path.join(dir, created.id))).sort()).toEqual([
+      "01-one.png",
+      "02-two.png",
+      "moment.yaml",
+    ]);
+  });
+
   it("replace clears old images before adding new ones", async () => {
     const dir = await tempContentDir();
     const created = await createMoment(dir, input(), [upload("one.png")]);

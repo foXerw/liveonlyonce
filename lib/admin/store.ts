@@ -178,29 +178,33 @@ export async function updateMoment(
   const folderPath = joinUnderRoot(root, requireValidId(id));
   await requireFolder(folderPath, id);
 
-  const all = await readdir(folderPath);
-  let images = all.filter((name) => isImageName(name) && !name.includes("..") && name !== "moment.yaml");
-
-  if (files.replace) {
-    for (const name of images) await unlink(path.join(folderPath, name));
-    images = [];
-  }
-  for (const raw of files.remove ?? []) {
-    const name = requireRemovableImage(raw, images);
-    await unlink(path.join(folderPath, name));
-    images = images.filter((n) => n !== name);
-  }
-
+  // --- validation phase: NOTHING below this point may mutate until every
+  // input has passed, so a rejected PATCH can never destroy existing images.
   const add = files.add ?? [];
   for (const f of add) validateUpload(f);
-  if (images.length + add.length > MAX_IMAGES) {
+
+  const all = await readdir(folderPath);
+  const existing = all.filter((name) => isImageName(name) && !name.includes("..") && name !== "moment.yaml");
+
+  const toRemove: string[] = [];
+  for (const raw of files.remove ?? []) {
+    toRemove.push(requireRemovableImage(raw, existing));
+  }
+
+  // Projected final image set — MAX_IMAGES arithmetic happens BEFORE any unlink.
+  const kept = files.replace ? [] : existing.filter((name) => !toRemove.includes(name));
+  if (kept.length + add.length > MAX_IMAGES) {
     throw new StoreValidationError(
-      `too many images: ${images.length} existing + ${add.length} new > ${MAX_IMAGES}`,
+      `too many images: ${kept.length} kept + ${add.length} new > ${MAX_IMAGES}`,
     );
   }
 
-  const taken = new Set<string>(images);
-  let index = images.reduce((max, name) => Math.max(max, numericPrefix(name)), 0);
+  // --- destructive phase: all inputs validated above; safe to mutate now.
+  const doomed = files.replace ? existing : toRemove;
+  for (const name of doomed) await unlink(path.join(folderPath, name));
+
+  const taken = new Set<string>(kept);
+  let index = kept.reduce((max, name) => Math.max(max, numericPrefix(name)), 0);
   for (const f of add) {
     let name: string;
     do {
