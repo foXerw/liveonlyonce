@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens — the single source of visual truth for the site.
+ * The blue family holds PLACEHOLDER values chosen for taste and contrast;
+ * Task 10 replaces them with the user's chosen palette. Components must
+ * reference these tokens only — never hardcoded blue hex values.
+ */
+@theme {
+  /* Ground: near-black with a blue cast, plus one raised surface for cards. */
+  --color-ink: #0a0e14;
+  --color-ink-raised: #10151f;
+
+  /* Blue family: deep navy -> bright azure -> pale ice -> translucent glow. */
+  --color-blue-deep: #1d2b42;
+  --color-blue-bright: #5c9ce6;
+  --color-blue-ice: #d7e3f2;
+  --color-blue-glow: rgba(92, 156, 230, 0.28);
+
+  /* Serif display face for zh copy with an en/Latin fallback stack.
+   * Deliberately a local stack (no next/font download) so builds stay offline. */
+  --font-serif-cn: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC",
+    "Noto Serif SC", "STSong", "SimSun", Georgia, "Times New Roman", serif;
 }
 
+/* next/font variables are set on <body> at runtime, so map them inline. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular",
+    "Cascadia Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-blue-ice);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-blue-deep);
+  color: var(--color-blue-ice);
+}
+
+:focus-visible {
+  outline-color: var(--color-blue-bright);
+}
+
+/* Honor the OS reduced-motion preference for all CSS-driven motion
+   (framer-motion handles its own via MotionConfig reducedMotion="user"). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
