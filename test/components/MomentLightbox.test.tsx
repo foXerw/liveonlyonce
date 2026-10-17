@@ -38,6 +38,18 @@ describe("MomentLightbox", () => {
     expect(img).toHaveAttribute("src", one.src);
   });
 
+  it("mounts the dialog directly under document.body (portal escapes transformed ancestors)", () => {
+    // A position:fixed dialog is clipped to any ancestor carrying a transform
+    // (the homepage island lives inside the Timeline's scroll-reveal box), so
+    // the dialog must never be a descendant of the render container.
+    const { container } = render(
+      <MomentLightbox images={[one]} labels={labels} onClose={() => {}} />,
+    );
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.parentElement).toBe(document.body);
+    expect(container.contains(dialog)).toBe(false);
+  });
+
   it("honors initialIndex and focuses its close button on open", () => {
     render(
       <MomentLightbox images={[one, two]} labels={labels} onClose={() => {}} initialIndex={1} />,
@@ -162,6 +174,14 @@ describe("MomentLightboxTrigger", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(link).toHaveFocus(); // focus returns to the card link
+  });
+
+  it("opens the dialog on document.body, outside the trigger's DOM subtree", () => {
+    const { container } = renderTrigger();
+    fireEvent.click(screen.getByRole("link", { name: "Open the moment" }));
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.parentElement).toBe(document.body);
+    expect(container.contains(dialog)).toBe(false);
   });
 
   it("leaves modifier clicks alone so new-tab navigation still works", () => {

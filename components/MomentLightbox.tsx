@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 export interface LightboxImage {
   /** Pre-sized asset URL — the lightbox always shows the 1920 tier. */
@@ -35,6 +36,14 @@ const FOCUSABLE =
  * lifecycle: focus moves to the close button, body scroll locks, and on
  * close both are restored — focus returns to whatever opened the lightbox.
  * Keyboard: Escape closes, Left/Right cycle (wrapping), Tab stays inside.
+ *
+ * The dialog is portaled to document.body: `position: fixed` is only
+ * viewport-relative while no ancestor carries a transform/filter/will-change
+ * — and the homepage trigger sits inside the Timeline's scroll-reveal
+ * container, whose animation sets a transform mid-scroll (a transformed
+ * ancestor becomes the containing block for fixed descendants, which would
+ * clip the dialog to the card). The portal also immunizes the overlay
+ * against any future hover transforms on card containers.
  */
 export function MomentLightbox({
   images,
@@ -104,10 +113,13 @@ export function MomentLightbox({
   }, [images.length, onClose, step]);
 
   if (images.length === 0) return null;
+  // Only ever mounted through user interaction, but guard SSR anyway —
+  // the portal target must be the real document.body.
+  if (typeof document === "undefined") return null;
   const current = images[index];
   const many = images.length > 1;
 
-  return (
+  return createPortal(
     <div
       ref={dialogRef}
       role="dialog"
@@ -164,7 +176,8 @@ export function MomentLightbox({
           <span className="sr-only">{labels.next}</span>
         </button>
       )}
-    </div>
+    </div>,
+    document.body,
   );
 }
 
