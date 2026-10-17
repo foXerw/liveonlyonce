@@ -11,7 +11,8 @@
 文件，集中在一个文件夹里，站点运行时直接读它。克隆下来，指向你自己的
 内容，瞬间就归你了。
 
-![截图占位——首页时间线](docs/screenshot-home.png)
+<!-- 这里放首页时间线截图，等设计打磨阶段补上。 -->
+
 
 ## 特性
 
@@ -88,7 +89,8 @@ description:
 location: # 可选
   zh: 家附近
   en: Close to home
-pinned: true # 可选，默认 false——置顶的瞬间会浮到最前
+pinned: true # 可选，默认 false——最新的置顶瞬间会展示在
+             # 时间线上方的精选位（时间线内仍保留）
 ```
 
 注意：文件夹名必须匹配 `YYYY-MM-DD-小写slug`（正则
@@ -101,8 +103,10 @@ pinned: true # 可选，默认 false——置顶的瞬间会浮到最前
 ## 个性化
 
 - **[site.config.yaml](site.config.yaml)** —— 站名、首页标语/副句、
-  关于页、页脚、联系邮箱；每个文案字段都支持 `zh`/`en` 一对。文件缺失
-  或字段不全时自动回退内置占位文案。
+  关于页、页脚、联系邮箱；仅 `heroLine`、`heroNote`、`about`、`footer`
+  四个字段支持 `zh`/`en` 一对，`siteName` 与 `contactEmail` 只接受纯
+  字符串（写成双语映射会静默回退内置占位值）。文件缺失或字段不全时
+  同样自动回退占位文案。
 - **[app/globals.css](app/globals.css)** —— `@theme` 块集中了配色变量
   （`--color-ink`、`--color-blue-*` 等）与字体；换肤改这里。
 - **[messages/zh.json](messages/zh.json) / [messages/en.json](messages/en.json)** ——

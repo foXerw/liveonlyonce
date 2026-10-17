@@ -12,7 +12,8 @@ No database, no account system, no build-time content: everything you write
 lives as plain files in one folder, and the site reads that folder at
 runtime. Clone it, point it at your own content, and you own your moments.
 
-![Screenshot placeholder — home timeline](docs/screenshot-home.png)
+<!-- Screenshot of the home timeline goes here once the design polish lands. -->
+
 
 ## Features
 
@@ -93,7 +94,8 @@ description:
 location: # optional
   zh: 家附近
   en: Close to home
-pinned: true # optional, default false — pinned moments float to the top
+pinned: true # optional, default false — the newest pinned moment is
+             # featured above the timeline (and stays in it)
 ```
 
 Notes: the folder name must match `YYYY-MM-DD-lowercase-slug` (regex
@@ -108,8 +110,11 @@ as living templates.
 ## Customization
 
 - **[site.config.yaml](site.config.yaml)** — site name, hero line/note,
-  about text, footer text, contact email. Every value supports `zh`/`en`
-  pairs. Missing file or fields fall back to built-in placeholders.
+  about text, footer text, contact email. Only `heroLine`, `heroNote`,
+  `about` and `footer` take `zh`/`en` pairs; `siteName` and `contactEmail`
+  are plain strings (a `zh`/`en` map there silently falls back to the
+  built-in placeholder). Missing file or fields also fall back to
+  placeholders.
 - **[app/globals.css](app/globals.css)** — the `@theme` block holds the
   palette (`--color-ink`, `--color-blue-*`, …) and fonts; retoken the site
   there.

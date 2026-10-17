@@ -60,21 +60,24 @@ or registry mirrors that rewrite tarball URLs can churn the lockfile.
 The app reads moments from `$CONTENT_DIR` at runtime (default: `./content`
 relative to the working directory — for pm2/systemd, **set it explicitly**).
 
-First-timer seed:
+Create the directory and hand it to the app user **first**, whichever path
+you take below — the admin UI writes uploads/edits there, and seeding into
+a root-owned (or missing-parent) path fails with `EACCES`:
+
+```bash
+sudo mkdir -p /srv/liveonlyonce-content
+sudo chown -R liveonlyonce:liveonlyonce /srv/liveonlyonce-content
+```
+
+Then either seed the bundled examples (copies `content-example/` in, only
+if the directory is empty):
 
 ```bash
 sudo -u liveonlyonce CONTENT_DIR=/srv/liveonlyonce-content npm run init:content
 ```
 
 or skip the examples and copy your own archive in (a moment is just a
-`<YYYY-MM-DD-slug>/` folder — see the README). The directory must be
-**writable by the app user** if the admin UI will be used (uploads and edits
-write files there):
-
-```bash
-sudo mkdir -p /srv/liveonlyonce-content
-sudo chown -R liveonlyonce:liveonlyonce /srv/liveonlyonce-content
-```
+`<YYYY-MM-DD-slug>/` folder — see the README).
 
 ## 4. Environment
 
