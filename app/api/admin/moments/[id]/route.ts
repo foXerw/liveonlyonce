@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import {
-  MAX_IMAGE_BYTES,
-  MAX_IMAGES,
   StoreNotFoundError,
   StoreValidationError,
   deleteMoment,
@@ -13,8 +11,10 @@ import { MOMENT_FOLDER_RE } from "@/lib/content/loader";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Same ceiling as the create route (see app/api/admin/moments/route.ts).
-export const bodySizeLimit = MAX_IMAGES * MAX_IMAGE_BYTES + 16 * 1024 * 1024;
+// (No `bodySizeLimit` segment config here — Next 16 does not support it and
+// ignores it silently.) Same as the create route: transport cap is
+// next.config.ts experimental.proxyClientMaxBodySize ("200mb"); per-file
+// size / image count are enforced by lib/admin/store.ts (lib/admin/limits.ts).
 
 /**
  * PATCH merge contract (minimal, documented):

@@ -9,8 +9,9 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// The login payload is one small JSON body; keep the cap tight.
-export const bodySizeLimit = 64 * 1024;
+// (No `bodySizeLimit` segment config here — Next 16 does not support it and
+// ignores it silently.) The login payload is one small JSON body; the only
+// transport cap in play is next.config.ts experimental.proxyClientMaxBodySize.
 
 export async function POST(request: Request): Promise<NextResponse> {
   const adminKey = process.env.ADMIN_KEY;

@@ -1,19 +1,16 @@
 import { NextResponse } from "next/server";
-import {
-  MAX_IMAGE_BYTES,
-  MAX_IMAGES,
-  StoreValidationError,
-  createMoment,
-} from "@/lib/admin/store";
+import { StoreValidationError, createMoment } from "@/lib/admin/store";
 import { parseMomentForm } from "@/lib/admin/form";
 import { contentDir } from "@/lib/content/dir";
 import { loadMoments } from "@/lib/content/loader";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Cap at the largest *legal* upload: MAX_IMAGES x MAX_IMAGE_BYTES (1500 MiB)
-// plus multipart overhead. Anything bigger is rejected by Next before parsing.
-export const bodySizeLimit = MAX_IMAGES * MAX_IMAGE_BYTES + 16 * 1024 * 1024;
+// (No `bodySizeLimit` segment config here — Next 16 does not support it and
+// ignores it silently.) Transport cap on upload bodies: next.config.ts
+// experimental.proxyClientMaxBodySize ("200mb"). Per-file size and image
+// count: lib/admin/limits.ts MAX_IMAGE_BYTES / MAX_IMAGES, enforced by
+// lib/admin/store.ts against the parsed form.
 
 export async function GET(): Promise<NextResponse> {
   // The loader skips invalid folders, so this list is exactly the valid moments.
