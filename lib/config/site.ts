@@ -17,8 +17,8 @@ const DEFAULT_PATH = "site.config.yaml";
 // Used when the file is missing, unreadable or not a usable mapping.
 const PLACEHOLDER: SiteConfig = {
   siteName: "LiveOnlyOnce",
-  heroLine: { zh: "此刻不会重来第二次", en: "This moment will not come again" },
-  heroNote: { zh: "一些只发生过一次的时刻", en: "Some moments that happened only once" },
+  heroLine: { zh: "有几天发了光", en: "A few days that glowed" },
+  heroNote: { zh: "都收在这儿了", en: "All kept here" },
   contactEmail: "hello@liveonlyonce.me",
   about: {
     zh: "这是一个存放生活瞬间的小站，按日期排列，慢慢回看。",

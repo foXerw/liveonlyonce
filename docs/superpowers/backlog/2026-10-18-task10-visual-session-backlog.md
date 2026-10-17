@@ -5,7 +5,7 @@
 ## 一、视觉会话必须产出的决定
 
 1. **蓝色色卡终值**：替换 `app/globals.css` `@theme` 中的占位令牌 `--color-ink`、`--color-blue-deep/-bright/-ice/-glow`（当前为 tasteful 占位深海军蓝→冰蓝）。全部 UI 蓝色均引用令牌，零硬编码 hex（最终评审已验证），换色只动这一个文件。
-2. **宣言终稿**：`site.config.yaml` 的 `heroLine`/`heroNote`/`footer`（当前占位："此刻不会重来第二次 / This moment will not come again"）。要求隐晦、不直白、无口号感。页脚"只活一次，记下来。"的祈使语气一并确认（Task 3 缓议项）。
+2. **宣言终稿**：✅ 已定（2026-10-18 站长亲选）——heroLine「有几天发了光 / A few days that glowed」+ heroNote「都收在这儿了 / All kept here」，site.config.yaml 与 lib/config/site.ts 内置回退值均已同步。剩余待确认：页脚"只活一次，记下来。"的祈使语气（Task 3 缓议项）。
 3. **动效过目**：滚动驱动动画目前是双向 scrub（往回滚卡片淡出、再进入重播）——确认是否喜欢，或改回一次性入场。
 4. **对比度重验**：现有 AA 达标是按占位色板算的；终选色板必须重跑对比度校验（正文 ≥4.5:1，大号 ≥3:1）。
 
