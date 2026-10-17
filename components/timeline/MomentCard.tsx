@@ -10,34 +10,22 @@ export interface MomentCardProps {
   locale: Locale;
   /** Only the first card of the page (hero-adjacent) loads eagerly. */
   priority?: boolean;
-  /** Task 6 wires this to the lightbox for photo cards; safe to omit. */
-  onOpenLightbox?: () => void;
 }
 
 /**
  * Dispatches a moment to its type-adaptive card. Server component — the
- * cards carry no interactivity of their own (motion lives in Reveal).
+ * cards carry no interactivity of their own (motion lives in Reveal; the
+ * photo card's lightbox lives in its MomentLightboxTrigger client island,
+ * so no callback ever crosses the server/client boundary here).
  */
-export function MomentCard({
-  moment,
-  locale,
-  priority,
-  onOpenLightbox,
-}: MomentCardProps) {
+export function MomentCard({ moment, locale, priority }: MomentCardProps) {
   switch (selectCard(moment)) {
     case "album":
       return <AlbumCard moment={moment} locale={locale} priority={priority} />;
     case "poster":
       return <PosterCard moment={moment} locale={locale} priority={priority} />;
     case "photo":
-      return (
-        <PhotoCard
-          moment={moment}
-          locale={locale}
-          priority={priority}
-          onOpenLightbox={onOpenLightbox}
-        />
-      );
+      return <PhotoCard moment={moment} locale={locale} priority={priority} />;
     case "quote":
       return <QuoteCard moment={moment} locale={locale} />;
   }

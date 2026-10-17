@@ -8,6 +8,7 @@
   "lightbox.close": "关闭",
   "lightbox.prev": "上一张",
   "lightbox.next": "下一张",
+  "lightbox.title": "图片查看器",
   "admin.title": "管理",
   "admin.passcode": "口令",
   "admin.login": "登录",

@@ -8,6 +8,7 @@
   "lightbox.close": "Close",
   "lightbox.prev": "Previous",
   "lightbox.next": "Next",
+  "lightbox.title": "Image viewer",
   "admin.title": "Admin",
   "admin.passcode": "Passcode",
   "admin.login": "Sign in",

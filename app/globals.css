@@ -79,19 +79,44 @@ body {
   }
 }
 
+/*
+ * Story parallax (album detail): plates drift a couple of percent against
+ * their overflow-hidden frame while crossing the viewport. Transform only —
+ * opacity never changes, so no-JS and unsupported browsers simply see the
+ * static plate (the framing zoom lives on the element via `scale`, which
+ * composes with this transform instead of being overridden by it).
+ */
+@keyframes story-drift {
+  from {
+    transform: translateY(2%);
+  }
+  to {
+    transform: translateY(-2%);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .story-drift {
+    animation: story-drift linear both;
+    animation-timeline: view();
+  }
+}
+
 /* Honor the OS reduced-motion preference: reveals are removed entirely
    (the global reset below cannot neutralize scroll-driven animations,
    whose progress is timeline-bound rather than duration-bound). */
 @media (prefers-reduced-motion: reduce) {
   .reveal-load,
-  .reveal-scroll {
+  .reveal-scroll,
+  .story-drift {
     animation: none;
   }
 }
 
 @media print {
   .reveal-load,
-  .reveal-scroll {
+  .reveal-scroll,
+  .story-drift {
     animation: none;
   }
 }

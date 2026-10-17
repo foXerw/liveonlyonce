@@ -68,6 +68,7 @@ describe("t", () => {
     "lightbox.close",
     "lightbox.prev",
     "lightbox.next",
+    "lightbox.title",
     "admin.title",
     "admin.passcode",
     "admin.login",
