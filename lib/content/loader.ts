@@ -7,7 +7,9 @@ import type { Moment, MomentImage, YearGroup } from "@/lib/types";
 
 /** `NNNN-MM-DD-<slug>` — the id of a moment is its folder name. */
 const MOMENT_FOLDER_RE = /^\d{4}-\d{2}-\d{2}-[a-z0-9][a-z0-9-]*$/;
-const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif"]);
+// Whitelist is exactly jpg/jpeg/png/webp — uploads and asset serving reject the
+// rest, so they must not be counted as images here either.
+const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
 export async function loadMoments(contentDir: string): Promise<Moment[]> {
   const key = path.resolve(contentDir);
@@ -53,8 +55,14 @@ async function scanContentDir(dir: string): Promise<Moment[]> {
       console.warn(`[content] skipped folder with invalid name "${folder}"`);
       continue;
     }
-    const moment = await loadMomentFolder(path.join(dir, folder), folder);
-    if (moment) moments.push(moment);
+    try {
+      const moment = await loadMomentFolder(path.join(dir, folder), folder);
+      if (moment) moments.push(moment);
+    } catch (error) {
+      // Folders can vanish or become unreadable between listing the content dir
+      // and scanning them — never let that fail the whole load.
+      console.warn(`[content] skipped folder "${folder}": ${reason(error)}`);
+    }
   }
 
   moments.sort(

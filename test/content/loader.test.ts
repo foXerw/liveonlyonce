@@ -120,13 +120,59 @@ describe("loadMoments", () => {
     await writeFile(path.join(momentDir, "01-broken.png"), Buffer.from("definitely not a png"));
     await writeFile(path.join(momentDir, "02-real.png"), PIXEL_PNG);
     await writeFile(path.join(momentDir, "notes.txt"), "not an image at all");
+    // Outside the supported whitelist (jpg/jpeg/png/webp) — must be silently ignored,
+    // not counted as images, since uploads/rendering elsewhere will reject them too.
+    await writeFile(path.join(momentDir, "clip.gif"), "GIF89a junk");
+    await writeFile(path.join(momentDir, "still.avif"), "avif junk");
 
     const [moment] = await loadMoments(dir);
     expect(moment.kind).toBe("photo");
     expect(moment.images).toEqual([{ file: "02-real.png", width: 1, height: 1 }]);
     expect(moment.posterAspect).toBe("square");
-    expect(warn).toHaveBeenCalledTimes(1); // the broken .png only; notes.txt is silent
+    expect(warn).toHaveBeenCalledTimes(1); // the broken .png only; notes.txt, .gif, .avif silent
     expect(warnedText()).toContain("01-broken.png");
+    expect(warnedText()).not.toContain("clip.gif");
+    expect(warnedText()).not.toContain("still.avif");
+  });
+
+  it("never crashes: skips a folder whose listing fails mid-scan", async () => {
+    // Simulates the race where a folder disappears between the parent directory
+    // scan and the per-folder scan (or has unreadable permissions). A real fs
+    // failure cannot be provoked deterministically on Windows without this seam.
+    const dir = await tempContentDir();
+    const gone = path.join(dir, "2026-01-01-vanished");
+    const survivor = path.join(dir, "2026-01-02-survivor");
+    for (const folder of [gone, survivor]) {
+      await mkdir(folder, { recursive: true });
+      await writeFile(path.join(folder, "moment.yaml"), VALID_YAML);
+    }
+
+    vi.resetModules();
+    vi.doMock("node:fs/promises", async () => {
+      const real = await vi.importActual<typeof import("node:fs/promises")>("node:fs/promises");
+      const original = real.readdir as unknown as (p: string, o?: unknown) => Promise<unknown>;
+      return {
+        ...real,
+        readdir: async (...args: unknown[]) => {
+          const target = String(args[0]);
+          if (target === gone) {
+            throw Object.assign(new Error(`ENOENT: no such file or directory, scandir '${target}'`), {
+              code: "ENOENT",
+            });
+          }
+          return original(target, args[1]);
+        },
+      };
+    });
+    try {
+      const loader = await import("@/lib/content/loader");
+      const moments = await loader.loadMoments(dir); // must resolve, not reject
+      expect(moments.map((m) => m.id)).toEqual(["2026-01-02-survivor"]);
+      expect(warnedText()).toContain("2026-01-01-vanished");
+    } finally {
+      vi.doUnmock("node:fs/promises");
+      vi.resetModules();
+    }
   });
 
   it("warns and returns nothing for a missing content dir", async () => {
