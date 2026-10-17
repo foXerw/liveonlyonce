@@ -7,7 +7,17 @@ interface CacheEntry {
   expiresAt: number;
 }
 
-const cache = new Map<string, CacheEntry>();
+// Production bundling (turbopack) duplicates module-level state per server
+// chunk group — pages and API routes each get their own copy of this module,
+// so clearContentCache() from an admin write route would never reach the
+// page-render copy (observed in the Task 8 smoke: / served a deleted moment
+// until the 15s TTL expired). Hosting the Map on globalThis keeps exactly one
+// cache per process, shared by every bundle copy. Self-host runs a single
+// Node server, so cross-process coherence beyond the TTL is out of scope.
+const holder = globalThis as typeof globalThis & {
+  __looContentCache?: Map<string, CacheEntry>;
+};
+const cache = (holder.__looContentCache ??= new Map<string, CacheEntry>());
 
 export function readContentCache(key: string): Moment[] | null {
   const hit = cache.get(key);

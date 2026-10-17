@@ -12,11 +12,11 @@ import path from "node:path";
 import { stringify } from "yaml";
 import { clearContentCache } from "@/lib/content/cache";
 import { loadMoments, MOMENT_FOLDER_RE } from "@/lib/content/loader";
+import { ALLOWED_EXT, MAX_IMAGE_BYTES, MAX_IMAGES } from "@/lib/admin/limits";
 import type { LocalizedText, Moment } from "@/lib/types";
 
-export const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp"];
-export const MAX_IMAGES = 60;
-export const MAX_IMAGE_BYTES = 25 * 1024 * 1024;
+// Re-exported from lib/admin/limits (single source of truth, client-safe).
+export { ALLOWED_EXT, MAX_IMAGE_BYTES, MAX_IMAGES };
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
