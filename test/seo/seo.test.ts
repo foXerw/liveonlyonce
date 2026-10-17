@@ -25,10 +25,10 @@ describe("buildPageMetadata", () => {
       title: "x",
       description: "d",
       imageFile: "01-lake-sunrise.png",
-      momentId: "2025-08-15-qinghai-grand-loop",
+      momentId: "2025-08-15-lakeside-circuit",
     });
     expect(md.openGraph?.images).toEqual([
-      { url: assetUrl("2025-08-15-qinghai-grand-loop", "01-lake-sunrise.png", 1280) },
+      { url: assetUrl("2025-08-15-lakeside-circuit", "01-lake-sunrise.png", 1280) },
     ]);
     expect(md.openGraph?.title).toBe(`x · ${siteConfig.siteName}`);
     expect(md.twitter?.images).toEqual(md.openGraph?.images);

@@ -36,18 +36,18 @@ const ROSE = [220, 110, 120];
 
 const FIXTURES = [
   {
-    dir: "2025-08-15-qinghai-grand-loop",
+    dir: "2025-08-15-lakeside-circuit",
     yaml: `date: 2025-08-15
 pinned: true
 title:
-  zh: 青甘大环线
-  en: Qinghai Grand Loop
+  zh: 环湖小记
+  en: Lakeside Circuit
 description:
-  zh: 七天两千公里，从青海湖到敦煌。
-  en: Two thousand kilometres in seven days, from Qinghai Lake to Dunhuang.
+  zh: 七天绕湖一圈，风一直从水面吹过来。
+  en: Seven days looping the lake, wind off the water the whole way.
 location:
-  zh: 青海·甘肃
-  en: Qinghai & Gansu, China
+  zh: 环湖公路
+  en: The lakeside road
 `,
     images: [
       { file: "01-lake-sunrise.png", width: 1600, height: 900, from: BLUE, to: SAND },

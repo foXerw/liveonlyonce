@@ -61,24 +61,24 @@ describe("parseMomentYaml", () => {
     const parsed = parseMomentYaml(
       `date: 2025-08-15
 title:
-  zh: 青甘大环线
-  en: Qinghai Grand Loop
+  zh: 环湖小记
+  en: Lakeside Circuit
 description:
   zh: 描述
   en: Description
 location:
-  zh: 青海
-  en: Qinghai
+  zh: 环湖
+  en: Lakeside
 `,
-      "2025-08-15-qinghai-grand-loop",
+      "2025-08-15-lakeside-circuit",
     );
     expect(parsed).toEqual({
-      id: "2025-08-15-qinghai-grand-loop",
+      id: "2025-08-15-lakeside-circuit",
       date: "2025-08-15",
       pinned: false,
-      title: { zh: "青甘大环线", en: "Qinghai Grand Loop" },
+      title: { zh: "环湖小记", en: "Lakeside Circuit" },
       description: { zh: "描述", en: "Description" },
-      location: { zh: "青海", en: "Qinghai" },
+      location: { zh: "环湖", en: "Lakeside" },
     });
   });
 

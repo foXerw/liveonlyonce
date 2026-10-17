@@ -8,7 +8,7 @@ import { getTransformed, resolveAssetPath, type TransformRun } from "@/lib/media
 
 // Vitest runs from the project root; jsdom import.meta.url is a server URL, not a file URL.
 const FIXTURES = path.resolve(process.cwd(), "tests/fixtures/content");
-const ALBUM = "2025-08-15-qinghai-grand-loop";
+const ALBUM = "2025-08-15-lakeside-circuit";
 const SRC = path.join(FIXTURES, ALBUM, "01-lake-sunrise.png"); // real 1600x900 PNG
 
 // Smallest valid 1x1 PNG (transparent) — stands in for a transform's output so

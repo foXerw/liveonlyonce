@@ -51,7 +51,7 @@ describe("loadMoments", () => {
       "2026-02-14-morning-run", // date desc, id desc on the 2026-02-14 tie
       "2026-02-14-late-thoughts",
       "2025-11-03-half-grown",
-      "2025-08-15-qinghai-grand-loop",
+      "2025-08-15-lakeside-circuit",
     ]);
     expect(warn).toHaveBeenCalledTimes(2);
     expect(warnedText()).toContain("2025-05-05-broken-yaml");
@@ -62,7 +62,7 @@ describe("loadMoments", () => {
     const moments = await loadMoments(FIXTURES);
     const byId = new Map(moments.map((m) => [m.id, m]));
 
-    const album = byId.get("2025-08-15-qinghai-grand-loop")!;
+    const album = byId.get("2025-08-15-lakeside-circuit")!;
     expect(album.kind).toBe("album");
     expect(album.pinned).toBe(true);
     expect(album.images.map((i) => i.file)).toEqual([
@@ -194,16 +194,16 @@ describe("groupByYear", () => {
     ]);
     expect(groups[1].moments.map((m) => m.id)).toEqual([
       "2025-11-03-half-grown",
-      "2025-08-15-qinghai-grand-loop",
+      "2025-08-15-lakeside-circuit",
     ]);
   });
 });
 
 describe("findMoment", () => {
   it("returns the moment for a known id", async () => {
-    const moment = await findMoment(FIXTURES, "2025-08-15-qinghai-grand-loop");
-    expect(moment?.id).toBe("2025-08-15-qinghai-grand-loop");
-    expect(moment?.title.en).toBe("Qinghai Grand Loop");
+    const moment = await findMoment(FIXTURES, "2025-08-15-lakeside-circuit");
+    expect(moment?.id).toBe("2025-08-15-lakeside-circuit");
+    expect(moment?.title.en).toBe("Lakeside Circuit");
   });
 
   it("returns null for unknown or malformed ids", async () => {
