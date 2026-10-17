@@ -1,0 +1,16 @@
+# Site-wide copy. Visual/design session will refine these lines;
+# only this file needs to change afterwards.
+siteName: LiveOnlyOnce
+heroLine:
+  zh: 此刻不会重来第二次
+  en: This moment will not come again
+heroNote:
+  zh: 一些只发生过一次的时刻
+  en: Some moments that happened only once
+contactEmail: hello@liveonlyonce.me
+about:
+  zh: 这是一个存放生活瞬间的小站，按日期排列，慢慢回看。
+  en: A small site for moments that only happen once, kept in date order.
+footer:
+  zh: 只活一次，记下来。
+  en: Live once. Write it down.
