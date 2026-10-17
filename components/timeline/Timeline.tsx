@@ -64,7 +64,6 @@ export function Timeline({
                   />
 
                   <Reveal
-                    delay={left ? 0 : 0.08}
                     className={cx(
                       "col-start-2 w-full md:flex md:w-full",
                       left ? "md:col-start-1 md:justify-end" : "md:col-start-2 md:justify-start",

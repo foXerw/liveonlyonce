@@ -17,7 +17,7 @@ export function Hero({ locale }: { locale: Locale }) {
         className="pointer-events-none absolute inset-x-0 top-0 h-[26rem] bg-[radial-gradient(58%_100%_at_50%_-10%,var(--color-blue-glow),transparent_72%)] opacity-70"
       />
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-20 pt-20 md:px-8 md:pb-28 md:pt-32">
-        <Reveal>
+        <Reveal mode="load">
           <span
             aria-hidden="true"
             className="mb-10 block h-px w-12 bg-blue-bright/50"

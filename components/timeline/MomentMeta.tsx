@@ -16,7 +16,7 @@ export function MomentMeta({
 }) {
   const location = moment.location ? resolveText(moment.location, locale) : "";
   return (
-    <p className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs tracking-wide text-blue-ice/40">
+    <p className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs tracking-wide text-blue-ice/60">
       {moment.pinned && (
         <>
           <span className="text-[11px] tracking-[0.18em] text-blue-bright/85">

@@ -51,7 +51,7 @@ export default async function RootLayout({
               </Link>
               <span aria-hidden="true" className="h-3 w-px bg-blue-ice/10" />
               {/* Container styling only — LocaleToggle internals are Task 4's. */}
-              <span className="[&_button]:cursor-pointer [&_button]:text-xs [&_button]:text-blue-ice/45 [&_button]:transition-colors [&_button:hover]:text-blue-ice/90 [&_button+button]:ml-2 [&_button+button]:border-l [&_button+button]:border-blue-ice/15 [&_button+button]:pl-2">
+              <span className="[&_button]:cursor-pointer [&_button]:text-xs [&_button]:text-blue-ice/60 [&_button]:transition-colors [&_button:hover]:text-blue-ice/90 [&_button+button]:ml-2 [&_button+button]:border-l [&_button+button]:border-blue-ice/15 [&_button+button]:pl-2">
                 <LocaleToggle />
               </span>
             </nav>

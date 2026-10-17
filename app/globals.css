@@ -50,8 +50,52 @@ body {
   outline-color: var(--color-blue-bright);
 }
 
-/* Honor the OS reduced-motion preference for all CSS-driven motion
-   (framer-motion handles its own via MotionConfig reducedMotion="user"). */
+/*
+ * Progressive-enhancement reveals. The hidden state never exists in the
+ * SSR HTML and never depends on JS: 'load' is a plain time-based CSS
+ * animation; 'scroll' is a scroll-driven view() animation gated behind
+ * @supports, so browsers without it simply show the content statically.
+ */
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.reveal-load {
+  animation: reveal-in 0.8s ease-out both;
+}
+
+@supports (animation-timeline: view()) {
+  .reveal-scroll {
+    animation: reveal-in linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 90%;
+  }
+}
+
+/* Honor the OS reduced-motion preference: reveals are removed entirely
+   (the global reset below cannot neutralize scroll-driven animations,
+   whose progress is timeline-bound rather than duration-bound). */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-load,
+  .reveal-scroll {
+    animation: none;
+  }
+}
+
+@media print {
+  .reveal-load,
+  .reveal-scroll {
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

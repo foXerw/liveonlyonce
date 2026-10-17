@@ -1,33 +1,22 @@
-"use client";
-
-import { MotionConfig, motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 interface RevealProps {
   children: ReactNode;
-  /** Seconds to wait before the reveal — used for gentle per-card stagger. */
-  delay?: number;
+  /** 'scroll' reveals on viewport entry; 'load' fades in once at page load. */
+  mode?: "scroll" | "load";
   className?: string;
 }
 
 /**
- * Quiet scroll reveal: fade + short slide-up the first time an element enters
- * the viewport. MotionConfig's reducedMotion="user" drops the transform for
- * visitors who prefer reduced motion (only a soft fade remains), and the CSS
- * reset in globals.css covers CSS transitions site-wide.
+ * Progressive-enhancement reveal wrapper — a server component with no
+ * client JS. The animation lives entirely in CSS (globals.css): content is
+ * visible by default in the SSR HTML, reveals still run with scripting
+ * disabled, unsupported browsers show content statically, and both
+ * prefers-reduced-motion and print drop the animation outright.
  */
-export function Reveal({ children, delay = 0, className }: RevealProps) {
+export function Reveal({ children, mode = "scroll", className }: RevealProps) {
+  const base = mode === "load" ? "reveal-load" : "reveal-scroll";
   return (
-    <MotionConfig reducedMotion="user">
-      <motion.div
-        className={className}
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
-        transition={{ duration: 0.7, delay, ease: "easeOut" }}
-      >
-        {children}
-      </motion.div>
-    </MotionConfig>
+    <div className={className ? `${base} ${className}` : base}>{children}</div>
   );
 }
