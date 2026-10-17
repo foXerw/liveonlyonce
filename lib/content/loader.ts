@@ -6,7 +6,7 @@ import { classifyAspect, inferKind, parseMomentYaml } from "@/lib/content/parse"
 import type { Moment, MomentImage, YearGroup } from "@/lib/types";
 
 /** `NNNN-MM-DD-<slug>` — the id of a moment is its folder name. */
-const MOMENT_FOLDER_RE = /^\d{4}-\d{2}-\d{2}-[a-z0-9][a-z0-9-]*$/;
+export const MOMENT_FOLDER_RE = /^\d{4}-\d{2}-\d{2}-[a-z0-9][a-z0-9-]*$/;
 // Whitelist is exactly jpg/jpeg/png/webp — uploads and asset serving reject the
 // rest, so they must not be counted as images here either.
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
