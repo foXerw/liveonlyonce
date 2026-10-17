@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SiteFooter } from "@/components/SiteFooter";
 import { siteConfig } from "@/lib/config/site";
+import { resolveText } from "@/lib/content/parse";
 import { LocaleToggle } from "@/lib/i18n/client";
 import { getLocale, t } from "@/lib/i18n/server";
+import { resolveMetadataBase } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,10 +20,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: siteConfig.siteName,
-  description: "Self-hosted life moments",
-};
+/**
+ * Root metadata is generated per request: the layout already calls headers()
+ * for the locale, so metadata can read the same headers without making
+ * anything dynamic that wasn't. Pages (see lib/seo.buildPageMetadata) set
+ * their own fully-qualified titles; a plain parent title never suffixes
+ * children, so there is no template to double up.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = getLocale(await headers());
+  return {
+    // Absolute origin for sharing: set SITE_URL in deployment; when absent
+    // Next resolves against localhost (its dev warning) — fine for self-host.
+    metadataBase: resolveMetadataBase(),
+    title: siteConfig.siteName,
+    description: resolveText(siteConfig.heroNote, locale),
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -58,6 +74,7 @@ export default async function RootLayout({
           </div>
         </header>
         {children}
+        <SiteFooter locale={locale} />
       </body>
     </html>
   );

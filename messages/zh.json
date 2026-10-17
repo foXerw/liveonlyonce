@@ -29,5 +29,7 @@
   "admin.tooLarge": "图片体积过大",
   "admin.loginFailed": "口令不正确",
   "about.title": "关于",
-  "footer.builtWith": "由 LiveOnlyOnce 记录"
+  "footer.builtWith": "由 LiveOnlyOnce 记录",
+  "notFound.title": "这里什么都没有",
+  "notFound.hint": "你要找的瞬间，也许从未被记下来。"
 }

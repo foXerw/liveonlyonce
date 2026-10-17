@@ -29,5 +29,7 @@
   "admin.tooLarge": "Image too large",
   "admin.loginFailed": "Incorrect passcode",
   "about.title": "About",
-  "footer.builtWith": "Recorded with LiveOnlyOnce"
+  "footer.builtWith": "Recorded with LiveOnlyOnce",
+  "notFound.title": "Nothing here",
+  "notFound.hint": "The moment you were looking for may never have been written down."
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,10 +7,33 @@ import { FeatureMoment } from "@/components/detail/FeatureMoment";
 import { TextEssay } from "@/components/detail/TextEssay";
 import { contentDir } from "@/lib/content/dir";
 import { findMoment } from "@/lib/content/loader";
+import { resolveText } from "@/lib/content/parse";
 import { layoutFor } from "@/lib/detail/layoutFor";
 import { getLocale, t } from "@/lib/i18n/server";
+import { buildPageMetadata } from "@/lib/seo";
 
-// Per-page metadata is Task 9's job — deliberately no generateMetadata here.
+/**
+ * Shareable metadata for a moment: resolved title/description in the
+ * request locale, og:image pointing at the poster (first image) served at
+ * the 1280 tier. Unknown ids fall back to the root (notFound) metadata.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const moment = await findMoment(contentDir(), id);
+  if (!moment) return {};
+
+  const locale = getLocale(await headers());
+  return buildPageMetadata({
+    title: resolveText(moment.title, locale),
+    description: resolveText(moment.description, locale),
+    imageFile: moment.poster?.file,
+    momentId: moment.poster ? moment.id : undefined,
+  });
+}
 
 export default async function MomentPage({
   params,
